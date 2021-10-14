@@ -23,7 +23,7 @@ class WordpressNewsImporter
         $dateFormat = new DateTime($dateParts[2].'-'.$dateParts[1].'-'.$dateParts[0]);
         
         $post_id = wp_insert_post(array (
-            'post_type' => 'post',
+            'post_type' => 'product',
             'post_title' => stripcslashes($data['name']),
             //'post_content' => stripcslashes($data['ExternalDescription']),
             'post_content' => stripcslashes($data['content']),
@@ -34,10 +34,10 @@ class WordpressNewsImporter
             'comment_status' => 'closed',
             'ping_status' => 'closed',
         ));
-        echo "INSERTED ARTICLE '".$data['name']."' | POST ID ".$post_id;
+        echo "INSERTED PRODUCT '".$data['name']."' | POST ID ".$post_id;
         if ($post_id) {
             if(isset($data['category'])){
-                $postCat = term_exists( $data['category'], 'category' );
+                $postCat = term_exists( $data['category'], 'product_cat' );
                 $catId = 0;
                 if($postCat){
                     $catId = $postCat['term_id'];
@@ -51,7 +51,7 @@ class WordpressNewsImporter
                     );
                     $catId = $newCat['term_id'];
                 }
-                wp_set_post_terms( $post_id, array($catId), 'category' );
+                wp_set_post_terms( $post_id, array($catId), 'product_cat' );
                 echo " | CATEGORY " . $data['category'];
             }
             if(isset($data['image'])){

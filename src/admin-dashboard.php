@@ -3,7 +3,7 @@
 add_action('admin_menu', 'sync_news_setup_menu');
 
 function sync_news_setup_menu(){
-  add_menu_page( 'Product Sync', 'Import News', 'manage_options', 'news-importer', 'new_import_admin_page','dashicons-download');
+  add_menu_page( 'Product Sync', 'Product Sync', 'manage_options', 'news-importer', 'new_import_admin_page','dashicons-download');
 }
 
 add_action('wp_ajax_site_news_sync_start', 'site_news_sync_start');
