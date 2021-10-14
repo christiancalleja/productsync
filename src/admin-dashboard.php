@@ -9,11 +9,11 @@ function sync_news_setup_menu(){
 add_action('wp_ajax_site_news_sync_start', 'site_news_sync_start');
 function site_news_sync_start(){
   set_time_limit(0); //avoid timeout
-  $sitefinity = SiteFinity::getInstance($_POST['allnews'], $_POST['singlearticle'], $_POST['newslang']);
-  $pageNumbers = $sitefinity->validateAllNewURI();
+  $csvIntegrator = CSVIntegrator::getInstance($_POST['allnews'], $_POST['singlearticle'], $_POST['newslang']);
+  $pageNumbers = $csvIntegrator->validateAllNewURI();
   $allArticles = [];
   if($pageNumbers > -1){
-    $allArticles = $sitefinity->getAllNews($pageNumbers); 
+    $allArticles = $csvIntegrator->getAllNews($pageNumbers); 
     echo json_encode($allArticles);
   } else {
     echo "-1";
@@ -24,8 +24,8 @@ function site_news_sync_start(){
 add_action('wp_ajax_site_news_insert_article', 'site_news_insert_article');
 function site_news_insert_article(){
   set_time_limit(0); //avoid timeout
-  $sitefinity = SiteFinity::getInstance($_POST['allnews'], $_POST['singlearticle'], $_POST['newslang']);
-  $article = $sitefinity->getArticle($_POST['articleId'], $_POST['categoryId']);
+  $csvIntegrator = CSVIntegrator::getInstance($_POST['allnews'], $_POST['singlearticle'], $_POST['newslang']);
+  $article = $csvIntegrator->getArticle($_POST['articleId'], $_POST['categoryId']);
   WordpressNewsImporter::insertNews((array)$article);
   wp_die();
 }
