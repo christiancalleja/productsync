@@ -1,6 +1,6 @@
 <?php
 
-class SiteFinity {
+class CSVIntegrator {
 
     private static $instance = null;
     protected $allNewsUri;
@@ -34,7 +34,7 @@ class SiteFinity {
     {
         if (self::$instance == null)
         {
-        self::$instance = new SiteFinity($allNewsUri, $singleArticleUri,$language = "en");
+        self::$instance = new CSVIntegrator($allNewsUri, $singleArticleUri,$language = "en");
         }
     
         return self::$instance;
