@@ -3,7 +3,7 @@
 add_action('admin_menu', 'sync_news_setup_menu');
 
 function sync_news_setup_menu(){
-  add_menu_page( 'Product Sync', 'Product Sync', 'manage_options', 'news-importer', 'new_import_admin_page','dashicons-download');
+  add_menu_page( 'Product Sync', 'Product Sync', 'manage_options', 'products-sync', 'new_import_admin_page','dashicons-download');
 }
 
 add_action('wp_ajax_site_news_sync_start', 'site_news_sync_start');
@@ -21,6 +21,14 @@ function site_news_sync_start(){
   wp_die();
 }
 
+add_action('wp_ajax_products_sync_save_path', 'save_path');
+function save_path(){
+  $path = $_POST['path'] ? $_POST['path'] : "";
+  add_option('wpprodsync_csv_path', $path);
+  echo "<script>alert('CSV path saved to')</script>";
+  wp_die();
+}
+
 add_action('wp_ajax_site_news_insert_article', 'site_news_insert_article');
 function site_news_insert_article(){
   set_time_limit(0); //avoid timeout
@@ -34,15 +42,11 @@ function site_news_insert_article(){
 function new_import_admin_page(){    ?>
       <h1>WooCommmerce Product Sync</h1>
       
-      <form method="POST" action="" name='start-import'>
-        <input type="hidden" name="action" value="site_news_sync_start" />
-        <p>Enter the all news URL endpoint (without pagination query string):<br/>
-        <input type="text" id="allnews" name="allnews" placeholder='All news endpoint' class="regular-text"><br>
-        
-        <p>Enter an article URL endpoint (use {{category}} and {{postId}} as placeholders, where applicable):<br/>
-        <input type="text" id="singlearticle" name="singlearticle" placeholder='Single article endpoint' class="regular-text"><br>
-        <p><strong>⚠️ Make sure that WPML language is set to the language of incoming articles</strong></p>
-        <p><input type="submit" value="Let's get synced!" class="button button-primary"/></p>
+      <form method="POST" action="" name='setup-config'>
+        <input type="hidden" name="action" value="save_path" />
+        <p>Enter the CSV import path:<br/>
+        <input type="text" id="path" name="path" placeholder='Path for sync file' value="<?php echo get_option('wpprodsync_csv_path'); ?>" class="regular-text"><br>
+        <p><input type="submit" value="Save settings" class="button button-primary"/></p>
       </form>
       <div class='sync-results' style="
           background-color: darkslategray;
