@@ -21,11 +21,18 @@ function site_news_sync_start(){
   wp_die();
 }
 
-add_action('wp_ajax_products_sync_save_path', 'save_path');
+add_action('wp_ajax_save_path', 'save_path');
 function save_path(){
   $path = $_POST['path'] ? $_POST['path'] : "";
   add_option('wpprodsync_csv_path', $path);
-  echo "<script>alert('CSV path saved to')</script>";
+  echo $path;
+  wp_die();
+}
+
+add_action('wp_ajax_start_sync', 'start_sync');
+function start_sync(){
+  
+  echo $path;
   wp_die();
 }
 
@@ -48,6 +55,10 @@ function new_import_admin_page(){    ?>
         <input type="text" id="path" name="path" placeholder='Path for sync file' value="<?php echo get_option('wpprodsync_csv_path'); ?>" class="regular-text"><br>
         <p><input type="submit" value="Save settings" class="button button-primary"/></p>
       </form>
+      <form method="POST" action="" name='start-sync'>
+        <input type="hidden" name="action" value="start_sync" />
+        <p><input type="submit" value="START SYNC" class="button button-primary"/></p>
+      </form>
       <div class='sync-results' style="
           background-color: darkslategray;
           padding: 20px;
@@ -60,8 +71,30 @@ function new_import_admin_page(){    ?>
         <span id='sync-final'></span>
       </div>
       <script>
-      jQuery( 'form[name="start-import"]' ).on( 'submit', function() {
-          jQuery("#sync-reponse").html("SIT TIGHT - STARTING SYNC PROCESS..."+"<br/>");
+      jQuery( 'form[name="start-sync"]' ).on( 'submit', function() {
+        jQuery("#sync-reponse").html("HERE WE GO!! STARTING SYNC..."+"<br/>");
+        jQuery("#sync-final").html("");
+        var form_data = jQuery( this ).serializeArray();   
+        jQuery.ajax({
+            url : "admin-ajax.php", 
+            type : 'post',
+            data : form_data,
+            success : function( response ) {
+              if(response){
+                jQuery("#sync-reponse").append('Path '+ response + ' saved succesfully<br/>');
+              }
+            },
+            fail : function( err ) {
+                alert( "There was an error: " + err );
+            }
+          
+        });
+        
+        // This return prevents the submit event to refresh the page.
+        return false;
+      });
+      jQuery( 'form[name="setup-config"]' ).on( 'submit', function() {
+          jQuery("#sync-reponse").html("SIT TIGHT - SAVING SYNC PATH..."+"<br/>");
           jQuery("#sync-final").html("");
           var form_data = jQuery( this ).serializeArray();   
           jQuery.ajax({
@@ -69,40 +102,9 @@ function new_import_admin_page(){    ?>
               type : 'post',
               data : form_data,
               success : function( response ) {
-                  if(response !== "-1"){
-                    var allArticles = JSON.parse(response);
-                    jQuery("#sync-reponse").append("WE GOT "+allArticles.length+" ARTICLES TO PROCESS..."+"<br/>");
-                    jQuery("#sync-reponse").append("That's quite a bit...maybe time for a coffee? ☕ "+"<br/>");
-                    form_data.shift(); //remove action to replace it
-                    form_data.push( { "name" : "action", "value" : "site_news_insert_article" } );
-                    let successCount = 0;
-                    allArticles.forEach(element => {
-                      const insert_data = form_data.map((x) => x);
-                      insert_data.push( { "name" : "articleId", "value" : element['id'] } );
-                      insert_data.push( { "name" : "categoryId", "value" : element['categoryId'] } );
-                      jQuery.ajax({
-                        url : "admin-ajax.php", 
-                        type : 'post',
-                        data : insert_data,
-                        success : function( response ) {
-                            if(response !== "-1"){
-                              jQuery("#sync-reponse").append(response+"<br/>");
-                              successCount++;
-                              jQuery("#sync-final").html(" ----- "+successCount+" of "+allArticles.length+" PROCESSED SUCCESFULLY.");
-                            } else {
-                              jQuery("#sync-reponse").append("!!! Something went wrong in this one "+element['id']+"<br/>");
-                            }
-                        },
-                        fail : function( err ) {
-                          jQuery("#sync-reponse").append("!!! Something went wrong in this one "+element['id']+"<br/>");
-                        }
-                      });
-                      
-                    });
-                    
-                  } else {
-                    jQuery("#sync-reponse").append("OUCH!! There was an error"+"<br/>");
-                  }
+                if(response){
+                  jQuery("#sync-reponse").append('Path '+ response + ' saved succesfully<br/>');
+                }
               },
               fail : function( err ) {
                   alert( "There was an error: " + err );
