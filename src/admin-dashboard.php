@@ -31,8 +31,7 @@ function save_path(){
 
 add_action('wp_ajax_start_sync', 'start_sync');
 function start_sync(){
-  
-  echo $path;
+  echo "1";
   wp_die();
 }
 
@@ -81,7 +80,7 @@ function new_import_admin_page(){    ?>
             data : form_data,
             success : function( response ) {
               if(response){
-                jQuery("#sync-reponse").append('Path '+ response + ' saved succesfully<br/>');
+                jQuery("#sync-reponse").append('Accessed method');
               }
             },
             fail : function( err ) {
@@ -89,8 +88,6 @@ function new_import_admin_page(){    ?>
             }
           
         });
-        
-        // This return prevents the submit event to refresh the page.
         return false;
       });
       jQuery( 'form[name="setup-config"]' ).on( 'submit', function() {
