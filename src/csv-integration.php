@@ -3,20 +3,10 @@
 class CSVIntegrator {
 
     private static $instance = null;
-    protected $allNewsUri;
-    protected $singleArticleUri;
-    protected $language;
-    protected $globalHeaders;
-    private $mtStructure = false; //to switch between be and mt response structure
+    protected $csvURL;
 
-    private function __construct($allNewsUri, $singleArticleUri,$language = "en") {
+    private function __construct($csvURL) {
         $this->allNewsUri = $allNewsUri;
-        $this->singleArticleUri = $singleArticleUri;
-        $this->language = $language;
-        $this->globalHeaders = [
-            'Content-Type: application/json',
-            'Accept: application/json'
-        ];
     }
 
 
@@ -30,11 +20,11 @@ class CSVIntegrator {
         throw new \Exception("Cannot unserialize a singleton.");
     }
 
-    public static function getInstance($allNewsUri, $singleArticleUri,$language = "en")
+    public static function getInstance($csvURL)
     {
         if (self::$instance == null)
         {
-        self::$instance = new CSVIntegrator($allNewsUri, $singleArticleUri,$language = "en");
+        self::$instance = new CSVIntegrator($csvURL);
         }
     
         return self::$instance;
@@ -61,21 +51,10 @@ class CSVIntegrator {
     /**
      * All Articles API Endpoints
      */
-    public function getAllNews($pagenumbers) {
-        $allNewsList = [];
-        for ($i=1; $i <= $pagenumbers; $i++) { 
-            $endpoint = $this->allNewsUri."?pagenumber=".$i;
-            $page = (array)$this->makeGetCurlCall($endpoint, [], []);
-            $articles = [];
-            if($this->mtStructure){
-                $decodedPage = (array)json_decode($page[0]);
-                $articles = $decodedPage['articles'];
-            } else {
-                $articles = $page['articles'];
-            }
-            $allNewsList = array_merge($allNewsList,$articles);
-        }
-        return $allNewsList;
+    public function getCSVAsJson() {
+        $csv = $this->makeGetCurlCall($csvURL);
+        
+        return $csv;
     }
 
     /**
@@ -121,7 +100,7 @@ class CSVIntegrator {
 
         curl_close($cURLConnection);
     
-        return json_decode($response);
+        return $response;
     }
 
     private function makePostCurlCall($_url, $_data = [], $_headers = []) {

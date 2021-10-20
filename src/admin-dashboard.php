@@ -24,23 +24,28 @@ function site_news_sync_start(){
 add_action('wp_ajax_save_path', 'save_path');
 function save_path(){
   $path = $_POST['path'] ? $_POST['path'] : "";
-  add_option('wpprodsync_csv_path', $path);
-  echo $path;
+  if(add_option('wpprodsync_csv_path', $path)){
+    echo $path;
+  } else {
+    if(update_option('wpprodsync_csv_path', $path)){
+      echo $path;
+    } else {
+      echo "error";
+    }
+  }
+  
   wp_die();
 }
 
 add_action('wp_ajax_start_sync', 'start_sync');
 function start_sync(){
-  echo "1";
-  wp_die();
-}
-
-add_action('wp_ajax_site_news_insert_article', 'site_news_insert_article');
-function site_news_insert_article(){
   set_time_limit(0); //avoid timeout
-  $csvIntegrator = CSVIntegrator::getInstance($_POST['allnews'], $_POST['singlearticle'], $_POST['newslang']);
-  $article = $csvIntegrator->getArticle($_POST['articleId'], $_POST['categoryId']);
-  WordpressNewsImporter::insertNews((array)$article);
+  $csvPath = get_option('wpprodsync_csv_path');
+  $csvIntegrator = CSVIntegrator::getInstance($csvPath);
+  echo $csvIntegrator->getCSVAsJson();
+  
+  // $article = $csvIntegrator->getArticle($_POST['articleId'], $_POST['categoryId']);
+  // WordpressNewsImporter::insertNews((array)$article);
   wp_die();
 }
 
@@ -79,9 +84,7 @@ function new_import_admin_page(){    ?>
             type : 'post',
             data : form_data,
             success : function( response ) {
-              if(response){
-                jQuery("#sync-reponse").append('Accessed method');
-              }
+              console.log("reponse",response);
             },
             fail : function( err ) {
                 alert( "There was an error: " + err );
