@@ -6,7 +6,7 @@ class CSVIntegrator {
     protected $csvURL;
 
     private function __construct($csvURL) {
-        $this->allNewsUri = $allNewsUri;
+        $this->csvURL = $csvURL;
     }
 
 
@@ -26,7 +26,6 @@ class CSVIntegrator {
         {
         self::$instance = new CSVIntegrator($csvURL);
         }
-    
         return self::$instance;
     }
 
@@ -52,9 +51,8 @@ class CSVIntegrator {
      * All Articles API Endpoints
      */
     public function getCSVAsJson() {
-        $csv = $this->makeGetCurlCall($csvURL);
-        
-        return $csv;
+        $csv = $this->makeGetCurlCall($this->csvURL);
+        return json_encode(str_getcsv($csv));
     }
 
     /**
@@ -81,9 +79,9 @@ class CSVIntegrator {
         $cURLConnection = curl_init();
         curl_setopt($cURLConnection, CURLOPT_URL, $_url);
         curl_setopt($cURLConnection, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($cURLConnection, CURLOPT_USERAGENT, $_SERVER['HTTP_USER_AGENT']); 
         curl_setopt($cURLConnection, CURLOPT_HTTPHEADER, $_headers);
         curl_setopt($cURLConnection, CURLOPT_VERBOSE, true );
-        curl_setopt($cURLConnection, CURLOPT_SSL_VERIFYHOST, 0);
         curl_setopt($cURLConnection, CURLOPT_SSL_VERIFYPEER, 0);
         $response = curl_exec($cURLConnection);
 
@@ -92,6 +90,7 @@ class CSVIntegrator {
         if (!curl_errno($cURLConnection)) {
             switch ($http_code) {
                 case 200:  # OK
+                    
                     break;
                 default:
                     echo 'Unexpected HTTP code: ', $http_code, "\n";
