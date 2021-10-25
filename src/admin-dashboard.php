@@ -6,21 +6,6 @@ function sync_news_setup_menu(){
   add_menu_page( 'Product Sync', 'Product Sync', 'manage_options', 'products-sync', 'new_import_admin_page','dashicons-download');
 }
 
-add_action('wp_ajax_site_news_sync_start', 'site_news_sync_start');
-function site_news_sync_start(){
-  set_time_limit(0); //avoid timeout
-  $csvIntegrator = CSVIntegrator::getInstance($_POST['allnews'], $_POST['singlearticle'], $_POST['newslang']);
-  $pageNumbers = $csvIntegrator->validateAllNewURI();
-  $allArticles = [];
-  if($pageNumbers > -1){
-    $allArticles = $csvIntegrator->getAllNews($pageNumbers); 
-    echo json_encode($allArticles);
-  } else {
-    echo "-1";
-  } 
-  wp_die();
-}
-
 add_action('wp_ajax_save_path', 'save_path');
 function save_path(){
   $path = $_POST['path'] ? $_POST['path'] : "";
@@ -42,8 +27,20 @@ function start_sync(){
   set_time_limit(0); //avoid timeout
   $csvPath = get_option('wpprodsync_csv_path');
   $csvIntegrator = CSVIntegrator::getInstance($csvPath);
-  echo $csvIntegrator->getCSVAsJson();
-  
+  $mapping = [
+    "_sku",
+    "post_title",
+    "parent_category",
+    "child_category",
+    "price",
+    "tm_last_updated"
+  ];
+  $mappedProducts = $csvIntegrator->getCSVAsArray($mapping);
+  foreach ($mappedProducts as $product) {
+    WordpressProductImporter::insertProduct($product);
+  }
+  echo json_encode($csvArray);
+
   // $article = $csvIntegrator->getArticle($_POST['articleId'], $_POST['categoryId']);
   // WordpressNewsImporter::insertNews((array)$article);
   wp_die();

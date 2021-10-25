@@ -29,46 +29,28 @@ class CSVIntegrator {
         return self::$instance;
     }
 
-    /** Validate end point and return pages */
-    public function validateAllNewURI(){
-        
-        $firstPage = (array)$this->makeGetCurlCall($this->allNewsUri, [], []);
-        //checking that the articles and totalPages keys exist
-        if(array_key_exists('articles',$firstPage) && array_key_exists('totalPages',$firstPage)){
-            return $firstPage['totalPages'];
-        } else {
-            //handling different malta site structue
-            $firstPageArr = (array)json_decode($firstPage[0]);
-            if(array_key_exists('articles',$firstPageArr) && array_key_exists('totalPages',$firstPageArr)){
-                $this->mtStructure = true;
-                return $firstPageArr['totalPages'];
-            } else {
-                return -1;
-            }            
-        }
-    }
+    
     /**
-     * All Articles API Endpoints
+     * Get CSV file, parse it to array and return
      */
-    public function getCSVAsJson() {
-        $csv = $this->makeGetCurlCall($this->csvURL);
-        return json_encode(str_getcsv($csv));
+    public function getCSVAsArray($mapping) {
+        $csvRaw = $this->makeGetCurlCall($this->csvURL);
+        $csvArray = [];
+        $delimiter = ',';
+        $lineBreak = "\n";
+        $rows = str_getcsv($csvRaw, $lineBreak); // Parses the rows. Treats the rows as a CSV with \n as a delimiter
+        foreach ($rows as $row) {
+            $rowRawArray = str_getcsv($row, $delimiter);
+            $rowTmpObj = array();
+            for ($i=0; $i < count($mapping); $i++) { 
+                $rowTmpObj[$mapping[$i]] = $rowRawArray[$i];
+            }
+            $csvArray[] = $rowTmpObj;
+        }
+        return $csvArray;
     }
 
-    /**
-     * Get single article by category and id 
-     */
-    public function getArticle($postId, $categoryId = ""){
-        //replace placeholders with postId and categoryId where available
-        
-        $catEndpoint = str_replace("{{category}}",$categoryId,$this->singleArticleUri);
-        $finalEndpoint = str_replace("{{postId}}",$postId,$catEndpoint);
-        $article = (array)$this->makeGetCurlCall($finalEndpoint, [], []);
-        if($this->mtStructure){
-            $article = (array)json_decode($article[0]);
-        }
-        return $article;
-    }
+
 
     /**
      * CURL GET & POST CALLS
