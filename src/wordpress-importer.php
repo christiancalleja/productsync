@@ -10,19 +10,22 @@ class WordpressProductImporter
         //check if news exists - if exists call update news
         kses_remove_filters(); //insert with html tags
         add_filter( 'http_request_host_is_external', function() { return true; });
-        $product = wc_get_product( $data['_sku'] );
-        if ($product != 0)
-        {
-           // return self::updateNews($data, $product);
-        } else {
-           
-            $new_simple_product = new WC_Product_Simple();
-            $new_simple_product->set_name($data["post_title"]);
-            $new_simple_product->set_sku($data["_sku"]);
-            $new_simple_product->set_price($data["price"]);
-            $new_product_id = $new_simple_product->save();
-            echo "INSERTED ".$new_product_id;
+        
+        $product_id = wc_get_product_id_by_sku( $data['_sku'] );
+        $simple_product = new WC_Product_Simple();
+        echo $product_id;
+        if ($product_id > 0)
+        {   
+            $product = wc_get_product( $product_id );
+            $simple_product = $product;
         }
+        $simple_product->set_name($data["post_title"]);
+        $simple_product->set_sku($data["_sku"]);
+        $simple_product->set_price($data["price"]);
+        $simple_product->set_regular_price($data["price"]);
+        $new_product_id = $simple_product->save();
+        echo "INSERTED ".$new_product_id;
+        
         
         
         // //format dd/mm/yyyy to a date
