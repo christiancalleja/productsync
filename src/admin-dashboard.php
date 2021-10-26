@@ -36,9 +36,7 @@ function start_sync(){
     "tm_last_updated"
   ];
   $mappedProducts = $csvIntegrator->getCSVAsArray($mapping);
-  foreach ($mappedProducts as $product) {
-    WordpressProductImporter::insertProduct($product);
-  }
+  WordpressProductImporter::insertProducts($mappedProducts);
   echo json_encode($csvArray);
 
   // $article = $csvIntegrator->getArticle($_POST['articleId'], $_POST['categoryId']);

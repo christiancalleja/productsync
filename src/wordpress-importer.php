@@ -1,31 +1,45 @@
 <?php
 
-// insert / update news post type depending if it exist or not
+// insert / update products depending if it exist or not
 
 class WordpressProductImporter 
 {
-    public static function insertProduct($data) 
+    public static function insertProducts($data) 
     {
         
-        //check if news exists - if exists call update news
         kses_remove_filters(); //insert with html tags
         add_filter( 'http_request_host_is_external', function() { return true; });
-        
-        $product_id = wc_get_product_id_by_sku( $data['_sku'] );
-        $simple_product = new WC_Product_Simple();
-        echo $product_id;
-        if ($product_id > 0)
-        {   
-            $product = wc_get_product( $product_id );
-            $simple_product = $product;
+        $categoriesArray = [];
+        foreach ($data as $prd) {
+            $product_id = wc_get_product_id_by_sku( $prd['_sku'] );
+            $simple_product = new WC_Product_Simple();
+            echo $product_id;
+            if ($product_id > 0)
+            {   
+                $product = wc_get_product( $product_id );
+                $simple_product = $product;
+            }
+            $simple_product->set_name($prd["post_title"]);
+            $simple_product->set_sku($prd["_sku"]);
+            $simple_product->set_price($prd["price"]);
+            $simple_product->set_regular_price($prd["price"]);
+            
+            if(isset($categoriesArray[$prd["parent_category"]][$prd["child_category"]])){
+                $catId = $categoriesArray[$prd["parent_category"]][$prd["child_category"]];
+                $simple_product->set_category_ids([$catId]);
+                echo "reuse category \n";
+            } else {
+                $parentCatId = WordpressProductImporter::setCategory($prd["parent_category"]);
+                $childCategoryId = WordpressProductImporter::setCategory($prd["child_category"],$parentCatId);
+                $simple_product->set_category_ids([$childCategoryId]); 
+                $categoriesArray[$prd["parent_category"]][$prd["child_category"]] = $childCategoryId;
+                echo "new category \n";
+            }
+            
+            $new_product_id = $simple_product->save();
+
+            echo "\nINSERTED ".$new_product_id;
         }
-        $simple_product->set_name($data["post_title"]);
-        $simple_product->set_sku($data["_sku"]);
-        $simple_product->set_price($data["price"]);
-        $simple_product->set_regular_price($data["price"]);
-        $new_product_id = $simple_product->save();
-        echo "INSERTED ".$new_product_id;
-        
         
         
         // //format dd/mm/yyyy to a date
@@ -75,7 +89,26 @@ class WordpressProductImporter
         // }
         kses_init_filters();
     }
+    public static function setCategory( $term, $parent = 0 ){
+        $category = term_exists( $term, 'product_cat', $parent );
+        $catId = 0;
+        if($category){
+            $catId = $category['term_id'];
+        } else {
+            $newCategory = wp_insert_term(
+                $term,   
+                'product_cat', 
+                array(
+                    'slug' => $term,
+                    'parent' => $parent
 
+                )
+            );
+            $catId = $newCategory['term_id'];
+        }
+        return $catId;
+        
+    }
     public static function updateNews($data,$post_id)
     {
         kses_remove_filters(); 
