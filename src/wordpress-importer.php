@@ -37,8 +37,15 @@ class WordpressProductImporter
             }
             
             $new_product_id = $simple_product->save();
-
+            
             echo "\nINSERTED ".$new_product_id;
+            if(isset($prd['image'])){
+                //downloads and set as featured.
+                $imgUrl = preg_replace('/\?.*/', '', $prd['image']);//cleaning query strings to avoid media_sideload_image issues;
+                $imageId = media_sideload_image( $imgUrl, $new_product_id, $prd["post_title"], 'id' ); 
+                set_post_thumbnail( $new_product_id, $imageId ); 
+                echo " -- IMAGE ID ".$imageId; 
+            }
         }
         
         
