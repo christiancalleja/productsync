@@ -10,14 +10,18 @@ class WordpressProductImporter
         kses_remove_filters(); //insert with html tags
         add_filter( 'http_request_host_is_external', function() { return true; });
         $categoriesArray = [];
+        $allProductIds = WordpressProductImporter::getAllProductIds();
         foreach ($data as $prd) {
-            $product_id = wc_get_product_id_by_sku( $prd['_sku'] );
+            //$product_id = wc_get_product_id_by_sku( $prd['_sku'] );
             $simple_product = new WC_Product_Simple();
-            echo $product_id;
-            if ($product_id > 0)
+            if (in_array($prd["_sku"], $allProductIds)
             {   
-                $product = wc_get_product( $product_id );
-                $simple_product = $product;
+                $simple_product = wc_get_product( $prd["_sku"] );
+                if(strtoLower($prd["show"]) == "n"){
+                    $simple_product->delete(true);
+                    echo "\nDELETED ". $prd["_sku"];
+                    continue;
+                }
             }
             $simple_product->set_name($prd["post_title"]);
             $simple_product->set_sku($prd["_sku"]);
@@ -38,7 +42,7 @@ class WordpressProductImporter
             
             $new_product_id = $simple_product->save();
             
-            echo "\nINSERTED ".$new_product_id;
+            echo "\nINSERTED ".$prd["_sku"]." (WP ID: ".$new_product_id.")";
             if(isset($prd['image'])){
                 //downloads and set as featured.
                 $imgUrl = preg_replace('/\?.*/', '', $prd['image']);//cleaning query strings to avoid media_sideload_image issues;
@@ -115,6 +119,16 @@ class WordpressProductImporter
         }
         return $catId;
         
+    }
+
+    public static function getAllProductIds(){
+        $products_IDs = new WP_Query( array(
+            'post_type' => 'product',
+            'post_status' => 'publish',
+            'fields' => 'ids'
+        ) );
+    
+        return $products_IDs; 
     }
     public static function updateNews($data,$post_id)
     {

@@ -33,7 +33,10 @@ function start_sync(){
     "parent_category",
     "child_category",
     "price",
-    "tm_last_updated"
+    "tm_last_updated",
+    "vat_rate",
+    "stock",
+    "show"
   ];
   $mappedProducts = $csvIntegrator->getCSVAsArray($mapping);
   WordpressProductImporter::insertProducts($mappedProducts);
