@@ -27,7 +27,8 @@ class WordpressProductImporter
             $simple_product->set_sku($prd["_sku"]);
             $simple_product->set_price($prd["price"]);
             $simple_product->set_regular_price($prd["price"]);
-            
+            $simple_product->set_stock($prd["stock"]);
+
             if(isset($categoriesArray[$prd["parent_category"]][$prd["child_category"]])){
                 $catId = $categoriesArray[$prd["parent_category"]][$prd["child_category"]];
                 $simple_product->set_category_ids([$catId]);
