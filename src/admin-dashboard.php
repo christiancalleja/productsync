@@ -39,11 +39,9 @@ function start_sync(){
     "show"
   ];
   $mappedProducts = $csvIntegrator->getCSVAsArray($mapping);
-  WordpressProductImporter::insertProducts($mappedProducts);
-  echo json_encode($csvArray);
+  $result = WordpressProductImporter::insertProducts($mappedProducts);
+  echo json_encode($result);
 
-  // $article = $csvIntegrator->getArticle($_POST['articleId'], $_POST['categoryId']);
-  // WordpressNewsImporter::insertNews((array)$article);
   wp_die();
 }
 
