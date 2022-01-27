@@ -56,7 +56,8 @@ class CSVIntegrator {
      * CURL GET & POST CALLS
      */
     private function makeGetCurlCall($_url, $_data = [], $_headers = []) {
-        $_headers = array_merge($_headers, $this->globalHeaders);
+        $globalHeaders = $this->globalHeaders ? $this->globalHeaders : [];
+        $_headers = array_merge($_headers, $globalHeaders);
         
         $cURLConnection = curl_init();
         curl_setopt($cURLConnection, CURLOPT_URL, $_url);
@@ -85,7 +86,8 @@ class CSVIntegrator {
     }
 
     private function makePostCurlCall($_url, $_data = [], $_headers = []) {
-        $_headers = array_merge($_headers, $this->globalHeaders);
+        $globalHeaders = $this->globalHeaders ? $this->globalHeaders : [];
+        $_headers = array_merge($_headers, $globalHeaders);
 
         $cURLConnection = curl_init();
 

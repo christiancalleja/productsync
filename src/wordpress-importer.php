@@ -16,7 +16,8 @@ class WordpressProductImporter
             $simple_product = new WC_Product_Simple();
             if (in_array($prd["_sku"], $allProductIds))
             {   
-                $simple_product = wc_get_product( $prd["_sku"] );
+                $prodId = wc_get_product_id_by_sku( $prd["_sku"] );
+                $simple_product = wc_get_product( $prodId );
                 if(strtoLower($prd["show"]) == "n"){
                     $simple_product->delete(true);
                     echo "\nDELETED ". $prd["_sku"];
@@ -76,13 +77,24 @@ class WordpressProductImporter
     }
 
     public static function getAllProductIds(){
-        $products_IDs = new WP_Query( array(
+
+        $productIds = [];
+        $args = array(
             'post_type' => 'product',
-            'post_status' => 'publish',
-            'fields' => 'ids'
-        ) );
-    
-        return $products_IDs->posts; 
+            'post_status' => 'publish', 
+            'posts_per_page' => -1
+        );
+        
+        $wcProductsArray = get_posts($args);
+        
+        if (count($wcProductsArray)) {
+            foreach ($wcProductsArray as $productPost) {
+                $productSKU = get_post_meta($productPost->ID, '_sku', true);
+                $productIds[] = $productSKU;
+            }
+        }
+
+        return $productIds; 
     }
     public static function updateNews($data,$post_id)
     {

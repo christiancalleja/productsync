@@ -45,6 +45,13 @@ function start_sync(){
   wp_die();
 }
 
+add_action( 'rest_api_init', function () {
+  /// final route is [baseurl] wp-json/productsync/v1/syncnow
+  register_rest_route( 'productsync/v1', '/syncnow', array(
+    'methods' => 'GET',
+    'callback' => 'start_sync',
+  ) );
+} );
 
 function new_import_admin_page(){    ?>
       <h1>WooCommmerce Product Sync</h1>
@@ -71,46 +78,50 @@ function new_import_admin_page(){    ?>
         <span id='sync-final'></span>
       </div>
       <script>
-      jQuery( 'form[name="start-sync"]' ).on( 'submit', function() {
-        jQuery("#sync-reponse").html("HERE WE GO!! STARTING SYNC..."+"<br/>");
-        jQuery("#sync-final").html("");
-        var form_data = jQuery( this ).serializeArray();   
-        jQuery.ajax({
+      const processor = {
+        wpajax: function(rawForm) {
+          var form_data = jQuery( rawForm ).serializeArray(); 
+          this.clearStatus();
+          this.printStatus("o yes");
+          jQuery.ajax({
             url : "admin-ajax.php", 
             type : 'post',
             data : form_data,
             success : function( response ) {
-              console.log("reponse",response);
+              return response;
             },
             fail : function( err ) {
-                alert( "There was an error: " + err );
+              alert( "There was an error: " + err );
             }
           
-        });
+          });
+        },
+        printStatus(text, final = false, clearFirst = false){
+          if(clearFirst){
+            this.clearStatus();
+          };
+          final 
+            ? jQuery("#sync-final").html(text)
+            : jQuery("#sync-reponse").append(text+"<br/>");
+        },
+        clearStatus(){
+          jQuery("#sync-final").html("");
+          jQuery("#sync-reponse").html("");
+        }
+      }
+      jQuery( 'form[name="start-sync"]' ).on( 'submit', function(event) {
+        event.preventDefault();
+        processor.printStatus("HERE WE GO!! STARTING SYNC...", false, true);
+        processor.wpajax(this);
         return false;
       });
-      jQuery( 'form[name="setup-config"]' ).on( 'submit', function() {
-          jQuery("#sync-reponse").html("SIT TIGHT - SAVING SYNC PATH..."+"<br/>");
-          jQuery("#sync-final").html("");
-          var form_data = jQuery( this ).serializeArray();   
-          jQuery.ajax({
-              url : "admin-ajax.php", 
-              type : 'post',
-              data : form_data,
-              success : function( response ) {
-                if(response){
-                  jQuery("#sync-reponse").append('Path '+ response + ' saved succesfully<br/>');
-                }
-              },
-              fail : function( err ) {
-                  alert( "There was an error: " + err );
-              }
-            
-          });
-          
-          // This return prevents the submit event to refresh the page.
-          return false;
-        });
+      jQuery( 'form[name="setup-config"]' ).on( 'submit', function(event) {
+        event.preventDefault();
+        processor.printStatus("SIT TIGHT - SAVING SYNC PATH...", false, true);
+        const response = processor.wpajax(this);
+        processor.printStatus('Path '+ response + ' saved succesfully', false, true); 
+        return false;
+      });
       </script>
     <?php 
 }
