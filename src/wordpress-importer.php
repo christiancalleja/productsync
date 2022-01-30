@@ -29,6 +29,9 @@ class WordpressProductImporter
             $simple_product->set_price($prd["price"]);
             $simple_product->set_regular_price($prd["price"]);
             $simple_product->set_stock($prd["stock"]);
+            $dateModified = strtotime($prd["tm_last_updated"]);
+            
+            $simple_product->set_date_modified($dateModified);
 
             if(isset($categoriesArray[$prd["parent_category"]][$prd["child_category"]])){
                 $catId = $categoriesArray[$prd["parent_category"]][$prd["child_category"]];

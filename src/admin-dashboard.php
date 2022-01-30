@@ -41,7 +41,7 @@ function start_sync(){
   $mappedProducts = $csvIntegrator->getCSVAsArray($mapping);
   $result = WordpressProductImporter::insertProducts($mappedProducts);
   echo json_encode($result);
-
+  die();
   wp_die();
 }
 
