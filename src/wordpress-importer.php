@@ -15,6 +15,7 @@ class WordpressProductImporter
             //$product_id = wc_get_product_id_by_sku( $prd['_sku'] );
             $processPrefix="\nINSERTED ";
             $simple_product = new WC_Product_Simple();
+            $dateUpdate = date("Ymd", strtotime($prd["tm_last_updated"]));
             if (in_array($prd["_sku"], $allProductIds))
             {   
                 $prodId = wc_get_product_id_by_sku( $prd["_sku"] );
@@ -24,6 +25,10 @@ class WordpressProductImporter
                     echo "\nDELETED ". $prd["_sku"];
                     continue;
                 }
+                if($dateUpdate == $simple_product->get_meta("tm_last_updated")){
+                    echo "\n NO UPDATES. SKIPPED PRODUCT ".$prd["_sku"];
+                    continue;
+                };
                 $processPrefix="\nUPDATED ";
             }
             $simple_product->set_name($prd["post_title"]);
@@ -31,9 +36,7 @@ class WordpressProductImporter
             $simple_product->set_price($prd["price"]);
             $simple_product->set_regular_price($prd["price"]);
             $simple_product->set_stock($prd["stock"]);
-            $dateModified = strtotime($prd["tm_last_updated"]);
-            
-            $simple_product->set_date_modified($dateModified);
+            $simple_product->update_meta_data('tm_last_updated', $dateUpdate);
 
             if(isset($categoriesArray[$prd["parent_category"]][$prd["child_category"]])){
                 $catId = $categoriesArray[$prd["parent_category"]][$prd["child_category"]];
