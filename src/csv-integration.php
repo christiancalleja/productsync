@@ -33,12 +33,13 @@ class CSVIntegrator {
     /**
      * Get CSV file, parse it to array and return
      */
-    public function getCSVAsArray($mapping) {
+    public function getCSVAsArray($mapping, $count = false) {
         $csvRaw = $this->makeGetCurlCall($this->csvURL);
         $csvArray = [];
         $delimiter = ',';
         $lineBreak = "\n";
         $rows = str_getcsv($csvRaw, $lineBreak); // Parses the rows. Treats the rows as a CSV with \n as a delimiter
+        $counter = 0;
         foreach ($rows as $row) {
             $rowRawArray = str_getcsv($row, $delimiter);
             $rowTmpObj = array();
@@ -46,6 +47,12 @@ class CSVIntegrator {
                 $rowTmpObj[$mapping[$i]] = $rowRawArray[$i];
             }
             $csvArray[] = $rowTmpObj;
+            if($count != false){
+                $counter++;
+                if($counter == $count){
+                    break;
+                }
+            }
         }
         return $csvArray;
     }

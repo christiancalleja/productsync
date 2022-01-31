@@ -23,7 +23,8 @@ function save_path(){
 }
 
 add_action('wp_ajax_start_sync', 'start_sync');
-function start_sync(){
+function start_sync($data){
+  $count = isset($data["count"]) ? $data["count"] : false;
   set_time_limit(0); //avoid timeout
   $csvPath = get_option('wpprodsync_csv_path');
   $csvIntegrator = CSVIntegrator::getInstance($csvPath);
@@ -38,7 +39,7 @@ function start_sync(){
     "stock",
     "show"
   ];
-  $mappedProducts = $csvIntegrator->getCSVAsArray($mapping);
+  $mappedProducts = $csvIntegrator->getCSVAsArray($mapping,$count);
   $result = WordpressProductImporter::insertProducts($mappedProducts);
   echo json_encode($result);
   die();
@@ -46,12 +47,20 @@ function start_sync(){
 }
 
 add_action( 'rest_api_init', function () {
-  /// final route is [baseurl] wp-json/productsync/v1/syncnow
-  register_rest_route( 'productsync/v1', '/syncnow', array(
-    'methods' => 'GET',
-    'callback' => 'start_sync',
-  ) );
-} );
+    /// final route is [baseurl] wp-json/productsync/v1/syncnow
+    register_rest_route( 'productsync/v1', '/syncnow/(?P<count>\d+)', array(
+        'methods' => 'GET',
+        'callback' => 'start_sync',
+      ) 
+    );
+
+    register_rest_route( 'productsync/v1', '/syncnow', array(
+      'methods' => 'GET',
+      'callback' => 'start_sync',
+    ) 
+  );
+  } 
+);
 
 function new_import_admin_page(){    ?>
       <h1>WooCommmerce Product Sync</h1>
