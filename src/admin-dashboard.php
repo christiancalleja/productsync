@@ -24,6 +24,7 @@ function save_path(){
 
 add_action('wp_ajax_start_sync', 'start_sync');
 function start_sync($data){
+  $time_start = microtime(true); 
   $count = isset($data["count"]) ? $data["count"] : false;
   set_time_limit(0); //avoid timeout
   $csvPath = get_option('wpprodsync_csv_path');
@@ -41,7 +42,10 @@ function start_sync($data){
   ];
   $mappedProducts = $csvIntegrator->getCSVAsArray($mapping,$count);
   $result = WordpressProductImporter::insertProducts($mappedProducts);
+  $time_end = microtime(true);
+  $execution_time = ($time_end - $time_start);
   echo json_encode($result);
+  echo "\n----- READY IN ".$execution_time." seconds";
   die();
   wp_die();
 }

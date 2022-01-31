@@ -13,6 +13,7 @@ class WordpressProductImporter
         $allProductIds = WordpressProductImporter::getAllProductIds();
         foreach ($data as $prd) {
             //$product_id = wc_get_product_id_by_sku( $prd['_sku'] );
+            $processPrefix="\nINSERTED ";
             $simple_product = new WC_Product_Simple();
             if (in_array($prd["_sku"], $allProductIds))
             {   
@@ -23,6 +24,7 @@ class WordpressProductImporter
                     echo "\nDELETED ". $prd["_sku"];
                     continue;
                 }
+                $processPrefix="\nUPDATED ";
             }
             $simple_product->set_name($prd["post_title"]);
             $simple_product->set_sku($prd["_sku"]);
@@ -36,18 +38,18 @@ class WordpressProductImporter
             if(isset($categoriesArray[$prd["parent_category"]][$prd["child_category"]])){
                 $catId = $categoriesArray[$prd["parent_category"]][$prd["child_category"]];
                 $simple_product->set_category_ids([$catId]);
-                echo "reuse category \n";
+                echo " | reuse category ".$prd["child_category"];
             } else {
                 $parentCatId = WordpressProductImporter::setCategory($prd["parent_category"]);
                 $childCategoryId = WordpressProductImporter::setCategory($prd["child_category"],$parentCatId);
                 $simple_product->set_category_ids([$childCategoryId]); 
                 $categoriesArray[$prd["parent_category"]][$prd["child_category"]] = $childCategoryId;
-                echo "new category \n";
+                echo " | new category ".$prd["child_category"];
             }
             
             $new_product_id = $simple_product->save();
             
-            echo "\nINSERTED ".$prd["_sku"]." (WP ID: ".$new_product_id.")";
+            echo $processPrefix.$prd["_sku"]." (WP ID: ".$new_product_id.")";
             if(isset($prd['image'])){
                 //downloads and set as featured.
                 $imgUrl = preg_replace('/\?.*/', '', $prd['image']);//cleaning query strings to avoid media_sideload_image issues;
