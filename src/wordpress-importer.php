@@ -49,17 +49,25 @@ class WordpressProductImporter
                 $categoriesArray[$prd["parent_category"]][$prd["child_category"]] = $childCategoryId;
                 echo " | new category ".$prd["child_category"];
             }
-            
+            if(isset($prd['image'])){
+                //downloads and set as featured.
+                // $imgUrl = preg_replace('/\?.*/', '', $prd['image']);//cleaning query strings to avoid media_sideload_image issues;
+                // $imageId = media_sideload_image( $imgUrl, $new_product_id, $prd["post_title"], 'id' ); 
+                // set_post_thumbnail( $new_product_id, $imageId ); 
+                // echo "\n -- IMAGE ID ".$imageId; 
+
+                // using FIFU plugin to proxy featured images:
+                $headers = get_headers($prd['image'], 1); //check if image is available and if yes, add as featured
+                if ($headers[0] == 'HTTP/1.1 200 OK') {
+                    $simple_product->update_meta_data('fifu_image_url', $prd['image']);
+                }
+                
+            }
+
             $new_product_id = $simple_product->save();
             
             echo $processPrefix.$prd["_sku"]." (WP ID: ".$new_product_id.")";
-            if(isset($prd['image'])){
-                //downloads and set as featured.
-                $imgUrl = preg_replace('/\?.*/', '', $prd['image']);//cleaning query strings to avoid media_sideload_image issues;
-                $imageId = media_sideload_image( $imgUrl, $new_product_id, $prd["post_title"], 'id' ); 
-                set_post_thumbnail( $new_product_id, $imageId ); 
-                echo "\n -- IMAGE ID ".$imageId; 
-            }
+            
         }
         kses_init_filters();
     }
