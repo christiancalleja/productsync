@@ -49,7 +49,6 @@ class WordpressProductImporter
                 $categoriesArray[$prd["parent_category"]][$prd["child_category"]] = $childCategoryId;
                 echo " | new category ".$prd["child_category"];
             }
-            echo $prd['image'];die();
             if(isset($prd['image'])){
                 //downloads and set as featured.
                 // $imgUrl = preg_replace('/\?.*/', '', $prd['image']);//cleaning query strings to avoid media_sideload_image issues;
