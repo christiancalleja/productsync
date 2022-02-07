@@ -58,10 +58,12 @@ class WordpressProductImporter
 
                 // using FIFU plugin to proxy featured images:
                 $imgUrl = get_option('wpprodsync_img_path').$prd['image'];
-                $headers = get_headers($imgUrl, 1); //check if image is available and if yes, add as featured
-                if ($headers[0] == 'HTTP/1.1 200 OK') {
-                    $simple_product->update_meta_data('fifu_image_url', $imgUrl);
-                }
+                $simple_product->update_meta_data('fifu_image_url', $imgUrl);
+                
+                // check if image is available and if yes, add as feature
+                // $headers = get_headers($imgUrl, 1); d
+                // if ($headers[0] == 'HTTP/1.1 200 OK') {
+                // }
                 
             }
 
