@@ -16,6 +16,7 @@ class WordpressProductImporter
             $processPrefix="\nINSERTED ";
             $simple_product = new WC_Product_Simple();
             $dateUpdate = date("Ymd", strtotime($prd["tm_last_updated"]));
+            
             if (in_array($prd["_sku"], $allProductIds))
             {   
                 $prodId = wc_get_product_id_by_sku( $prd["_sku"] );
@@ -31,6 +32,12 @@ class WordpressProductImporter
                 };
                 $processPrefix="\nUPDATED ";
             }
+            
+            if(strtoLower($prd["show"]) == "n"){
+                echo "\nNOT INSERTING ". $prd["_sku"];
+                continue;
+            }
+
             $simple_product->set_name($prd["post_title"]);
             $simple_product->set_sku($prd["_sku"]);
             $simple_product->set_price($prd["price"]);
