@@ -46,6 +46,9 @@ class CSVIntegrator {
             for ($i=0; $i < count($mapping); $i++) { 
                 $rowTmpObj[$mapping[$i]] = $rowRawArray[$i];
             }
+            if(!isset($mapping['image'])){
+                $rowTmpObj['image'] = $rowTmpObj['_sku'].".jpg";
+            }
             $csvArray[] = $rowTmpObj;
             if($count != false){
                 $counter++;
