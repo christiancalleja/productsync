@@ -35,7 +35,8 @@ class WordpressProductImporter
             $simple_product->set_sku($prd["_sku"]);
             $simple_product->set_price($prd["price"]);
             $simple_product->set_regular_price($prd["price"]);
-            $simple_product->set_stock($prd["stock"]);
+            $simple_product->set_manage_stock(true);
+            $simple_product->set_stock_quantity((float)$prd["stock"]);
             $simple_product->update_meta_data('tm_last_updated', $dateUpdate);
 
             if(isset($categoriesArray[$prd["parent_category"]][$prd["child_category"]])){
