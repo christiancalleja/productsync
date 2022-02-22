@@ -6,6 +6,14 @@ function sync_news_setup_menu(){
   add_menu_page( 'Product Sync', 'Product Sync', 'manage_options', 'products-sync', 'new_import_admin_page','dashicons-download');
 }
 
+add_filter( 'woocommerce_get_availability_text', 'trademargin_custom_get_availability_text', 99, 2 );
+  
+function trademargin_custom_get_availability_text( $availability, $product ) {
+   $stock = $product->get_stock_quantity();
+   if ( $product->is_in_stock() && $product->managing_stock() ) $availability = 'Quantity: ' . $stock;
+   return $availability;
+}
+
 add_action('wp_ajax_save_path', 'save_path');
 function save_path(){
   $path = $_POST['path'] ? $_POST['path'] : "";
