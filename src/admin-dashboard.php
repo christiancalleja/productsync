@@ -10,7 +10,13 @@ add_filter( 'woocommerce_get_availability_text', 'trademargin_custom_get_availab
   
 function trademargin_custom_get_availability_text( $availability, $product ) {
    $stock = $product->get_stock_quantity();
-   if ( $product->is_in_stock() && $product->managing_stock() ) $availability = 'Quantity: ' . $stock;
+   if ( $product->is_in_stock() && $product->managing_stock() ) {
+    if($stock > 2 ) { 
+      $availability = 'In Stock';
+    } else {
+      $availability = 'Call for availability'; 
+    }
+   }
    return $availability;
 }
 
