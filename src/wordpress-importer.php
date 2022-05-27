@@ -10,6 +10,7 @@ class WordpressProductImporter
         kses_remove_filters(); //insert with html tags
         add_filter( 'http_request_host_is_external', function() { return true; });
         $categoriesArray = [];
+        echo 'here i am'; die();
         $allProductIds = WordpressProductImporter::getAllProductIds();
         print_r($allProductIds);die();
         foreach ($data as $prd) {
