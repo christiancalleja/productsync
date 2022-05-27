@@ -40,10 +40,9 @@ class CSVIntegrator {
         $lineBreak = "\n";
         $rows = str_getcsv($csvRaw, $lineBreak); // Parses the rows. Treats the rows as a CSV with \n as a delimiter
         $counter = 0;
-        echo $rows;
-        die();
         foreach ($rows as $row) {
             $rowRawArray = str_getcsv($row, $delimiter);
+            print_r($rowRawArray);die();
             $rowTmpObj = array();
             for ($i=0; $i < count($mapping); $i++) { 
                 $rowTmpObj[$mapping[$i]] = $rowRawArray[$i];
