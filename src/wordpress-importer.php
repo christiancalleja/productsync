@@ -11,6 +11,7 @@ class WordpressProductImporter
         add_filter( 'http_request_host_is_external', function() { return true; });
         $categoriesArray = [];
         $allProductIds = WordpressProductImporter::getAllProductIds();
+        print_r($allProductIds);die();
         foreach ($data as $prd) {
             //$product_id = wc_get_product_id_by_sku( $prd['_sku'] );
             $processPrefix="\nINSERTED ";

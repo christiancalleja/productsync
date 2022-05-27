@@ -57,7 +57,6 @@ class CSVIntegrator {
                 }
             }
         }
-        print_r($csvArray);die();
         return $csvArray;
     }
 
