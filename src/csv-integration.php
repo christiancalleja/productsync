@@ -42,7 +42,6 @@ class CSVIntegrator {
         $counter = 0;
         foreach ($rows as $row) {
             $rowRawArray = str_getcsv($row, $delimiter);
-            print_r($rowRawArray);die();
             $rowTmpObj = array();
             for ($i=0; $i < count($mapping); $i++) { 
                 $rowTmpObj[$mapping[$i]] = $rowRawArray[$i];
@@ -58,6 +57,7 @@ class CSVIntegrator {
                 }
             }
         }
+        print_r($csvArray);die();
         return $csvArray;
     }
 
