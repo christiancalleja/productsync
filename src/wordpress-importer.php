@@ -57,25 +57,15 @@ class WordpressProductImporter
                 $categoriesArray[$prd["parent_category"]][$prd["child_category"]] = $childCategoryId;
                 echo " | new category ".$prd["child_category"];
             }
-            if(isset($prd['image'])){
-                //downloads and set as featured.
-                // $imgUrl = preg_replace('/\?.*/', '', $prd['image']);//cleaning query strings to avoid media_sideload_image issues;
-                // $imageId = media_sideload_image( $imgUrl, $new_product_id, $prd["post_title"], 'id' ); 
-                // set_post_thumbnail( $new_product_id, $imageId ); 
-                // echo "\n -- IMAGE ID ".$imageId; 
 
-                // using FIFU plugin to proxy featured images:
-                $imgUrl = get_option('wpprodsync_img_path').$prd['image'];
-                $simple_product->update_meta_data('fifu_image_url', $imgUrl);
-                
-                // check if image is available and if yes, add as feature
-                // $headers = get_headers($imgUrl, 1); d
-                // if ($headers[0] == 'HTTP/1.1 200 OK') {
-                // }
-                
-            }
 
             $new_product_id = $simple_product->save();
+
+            if(isset($prd['image'])){
+                // using FIFU plugin to proxy featured images:
+                $imgUrl = get_option('wpprodsync_img_path').$prd['image'];
+                fifu_dev_set_image($new_product_id, $imgUrl);          
+            }
             
             echo $processPrefix.$prd["_sku"]." (WP ID: ".$new_product_id.")";
             
