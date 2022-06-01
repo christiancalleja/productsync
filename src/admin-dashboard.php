@@ -98,7 +98,7 @@ function new_import_admin_page(){    ?>
         <input type="hidden" name="action" value="save_path" />
         <p>Enter the CSV import path:<br/>
         <input type="text" id="path" name="path" placeholder='Path for sync file' value="<?php echo get_option('wpprodsync_csv_path'); ?>" class="regular-text"><br>
-        <p>Enter the images base ULR path:<br/>
+        <p>Enter the images base URL path:<br/>
         <input type="text" id="imgpath" name="imgpath" placeholder='Path for images folder' value="<?php echo get_option('wpprodsync_img_path'); ?>" class="regular-text"><br>
         <p><input type="submit" value="Save settings" class="button button-primary"/></p>
       </form>
