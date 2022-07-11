@@ -63,7 +63,8 @@ function start_sync($data){
     "tm_last_updated",
     "vat_rate",
     "stock",
-    "show"
+    "show",
+    "post_content"
   ];
   $mappedProducts = $csvIntegrator->getCSVAsArray($mapping,$count);
   $result = WordpressProductImporter::insertProducts($mappedProducts);
