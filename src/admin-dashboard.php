@@ -6,6 +6,7 @@ function sync_news_setup_menu(){
   add_menu_page( 'Product Sync', 'Product Sync', 'manage_options', 'products-sync', 'new_import_admin_page','dashicons-download');
 }
 
+// TradeMargin Custom 'GetAvailbity Text
 add_filter( 'woocommerce_get_availability_text', 'trademargin_custom_get_availability_text', 99, 2 );
   
 function trademargin_custom_get_availability_text( $availability, $product ) {
@@ -19,6 +20,37 @@ function trademargin_custom_get_availability_text( $availability, $product ) {
    }
    return $availability;
 }
+
+// TradeMargin CSV file attachment to email
+function trademargin_woocommerce_order_attachments( $attachments, $email_id, $email_order ) {
+  $products = new WP_Query($args);
+  $pr_arr = array();
+  if( $products->have_posts() ) :
+  while( $products->have_posts() ) : $products->the_post();
+      $pr_arr[]= get_the_ID();
+  endwhile; 
+      else : 
+  endif; 
+  wp_reset_postdata();
+  // Upload your attachment in the WordPress media library.
+  // Get the attachment ID from there. 
+  // It can be any image or PDF file or any attachment that is supported by WordPress.
+  $attachment_id = 30314;
+  // adding the attachment to the order confirmation email for the customer
+  if( $email_id === 'customer_processing_order' ){
+      $order = wc_get_order( $email_order );
+      $items = $order->get_items();
+      foreach ( $items as $item ) {
+          $order_prod_id = $item->get_product_id();
+          if (in_array($order_prod_id, $pr_arr)) {
+              $attachments[] = get_attached_file( $attachment_id );
+          }
+      }
+  }
+ return $attachments;
+}
+// hook the function into WooCommerce email attachment filter
+add_filter( 'woocommerce_email_attachments', 'trademargin_woocommerce_order_attachments', 10, 3 );
 
 add_action('wp_ajax_save_path', 'save_path');
 function save_path(){
@@ -47,6 +79,7 @@ function save_path(){
   wp_die();
 }
 
+// Main start sync method which aggregates and inputs data
 add_action('wp_ajax_start_sync', 'start_sync');
 function start_sync($data){
   $time_start = microtime(true); 
@@ -76,6 +109,8 @@ function start_sync($data){
   wp_die();
 }
 
+
+// Registering of rest api endpoints to run script over http requests.
 add_action( 'rest_api_init', function () {
     /// final route is [baseurl] wp-json/productsync/v1/syncnow
     register_rest_route( 'productsync/v1', '/syncnow/(?P<count>\d+)', array(
@@ -92,6 +127,7 @@ add_action( 'rest_api_init', function () {
   } 
 );
 
+// Admin Page setup within WP-admin backend. Used to set up the basic URLs from where to grab CSV and Images.
 function new_import_admin_page(){    ?>
       <h1>WooCommmerce Product Sync</h1>
       
