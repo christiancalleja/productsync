@@ -112,6 +112,7 @@ function start_sync($data){
 add_action('wp_ajax_get_order_details', 'get_order_details');
 function get_order_details($data){
   echo "Testing ";
+  die();
   wp_die();
 }
 // Registering of rest api endpoints to run script over http requests.
