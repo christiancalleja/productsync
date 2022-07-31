@@ -109,6 +109,7 @@ function start_sync($data){
   wp_die();
 }
 
+add_action('wp_ajax_get_order_details', 'get_order_details');
 function get_order_details($data){
   echo "Testing ";
   wp_die();
