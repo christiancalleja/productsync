@@ -127,14 +127,12 @@ add_action( 'rest_api_init', function () {
     register_rest_route( 'productsync/v1', '/syncnow', array(
       'methods' => 'GET',
       'callback' => 'start_sync',
-    ) 
+    ); 
 
     register_rest_route( 'order_details', '/(?P<orderId>\d+)', array(
       'methods' => 'GET',
       'callback' => 'get_order_details',
-    ) 
-  );
-  );
+    );
   } 
 );
 
