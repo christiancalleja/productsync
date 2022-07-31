@@ -118,6 +118,7 @@ function get_order_details($data){
     $output = '';
     foreach ($items as $item) {
       $itemId = $item->get_id();
+      echo $itemId;die();
       $product = wc_get_product($itemId);
       $output .= $product->get_sku() ." ".$item->get_quantity()."\n";
     }
