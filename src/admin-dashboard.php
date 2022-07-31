@@ -6,10 +6,10 @@ function sync_news_setup_menu(){
   add_menu_page( 'Product Sync', 'Product Sync', 'manage_options', 'products-sync', 'new_import_admin_page','dashicons-download');
 }
 
-// TradeMargin Custom 'GetAvailbity Text
-add_filter( 'woocommerce_get_availability_text', 'trademargin_custom_get_availability_text', 99, 2 );
+//  Custom 'GetAvailbity Text
+add_filter( 'woocommerce_get_availability_text', 'custom_get_availability_text', 99, 2 );
   
-function trademargin_custom_get_availability_text( $availability, $product ) {
+function custom_get_availability_text( $availability, $product ) {
    $stock = $product->get_stock_quantity();
    if ( $product->is_in_stock() && $product->managing_stock() ) {
     if($stock > 2 ) { 
@@ -21,8 +21,8 @@ function trademargin_custom_get_availability_text( $availability, $product ) {
    return $availability;
 }
 
-// TradeMargin CSV file attachment to email
-function trademargin_woocommerce_order_attachments( $attachments, $email_id, $email_order ) {
+// CSV file attachment to email
+function custom_order_attachments( $attachments, $email_id, $email_order ) {
   $products = new WP_Query($args);
   $pr_arr = array();
   if( $products->have_posts() ) :
@@ -50,7 +50,7 @@ function trademargin_woocommerce_order_attachments( $attachments, $email_id, $em
  return $attachments;
 }
 // hook the function into WooCommerce email attachment filter
-add_filter( 'woocommerce_email_attachments', 'trademargin_woocommerce_order_attachments', 10, 3 );
+add_filter( 'woocommerce_email_attachments', 'custom_order_attachments', 10, 3 );
 
 add_action('wp_ajax_save_path', 'save_path');
 function save_path(){
@@ -109,7 +109,10 @@ function start_sync($data){
   wp_die();
 }
 
-
+function get_order_details($data){
+  echo "Testing ";
+  wp_die();
+}
 // Registering of rest api endpoints to run script over http requests.
 add_action( 'rest_api_init', function () {
     /// final route is [baseurl] wp-json/productsync/v1/syncnow
@@ -123,6 +126,12 @@ add_action( 'rest_api_init', function () {
       'methods' => 'GET',
       'callback' => 'start_sync',
     ) 
+
+    register_rest_route( 'order_details', '/(?P<orderId>\d+)', array(
+      'methods' => 'GET',
+      'callback' => 'get_order_details',
+    ) 
+  );
   );
   } 
 );
