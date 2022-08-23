@@ -120,6 +120,10 @@ function get_order_details($data){
       $product = $item->get_product();
       $output .= $product->get_sku() ." ".$item->get_quantity()."\n";
     }
+    header("Content-type: text/csv");
+    header("Content-Disposition: attachment; filename=Order_".$data["orderId"].".csv");
+    header("Pragma: no-cache");
+    header("Expires: 0");
     echo $output;
   } else {
     echo "No order id provided. Make sure to have order id at the end like: wp-json/order_details/[orderId] ";
