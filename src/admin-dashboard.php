@@ -118,7 +118,7 @@ function get_order_details($data){
     $output = '';
     foreach ($items as $item) {
       $product = $item->get_product();
-      $output .= $product->get_sku() ." ".$item->get_quantity()."\n";
+      $output .= $product->get_sku() .",".$item->get_quantity()."\n";
     }
     header("Content-type: text/csv");
     header("Content-Disposition: attachment; filename=Order_".$data["orderId"].".csv");
