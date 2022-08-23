@@ -67,7 +67,7 @@ function tm_order_details_to_order_email( $order, $sent_to_admin, $plain_text, $
 			echo "\nCopy paste in browser to get order details for internal accounts: ".$orderDetailsLink."\n";
 		}
 		else {
-			echo '<p><strong>Order details for internal accounts:</strong><br/><a href="'.$orderDetailsLink.'">'.$orderDetailsLink.'</a>';
+			echo '<p><strong>Click following link to download order details (for accounts):</strong><br/><a href="'.$orderDetailsLink.'">'.$orderDetailsLink.'</a>';
 		}
 	}
 }
