@@ -49,6 +49,30 @@ function custom_order_attachments( $attachments, $email_id, $email_order ) {
   }
  return $attachments;
 }
+
+// Hook to WooCommerce Order Email to append link for order
+add_action( 'woocommerce_email_order_details', 'tm_order_details_to_order_email', 5, 4 ); 
+function tm_order_details_to_order_email( $order, $sent_to_admin, $plain_text, $email ) {
+
+	if ( $sent_to_admin ) {
+    if(isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on')   
+         $baseurl = "https://";   
+    else  
+         $baseurl = "http://";   
+    // Append the host(domain name, ip) to the URL.   
+    $baseurl.= $_SERVER['HTTP_HOST'];   
+
+    $orderDetailsLink = $baseurl.'/wp-json/order_details/'.$order->get_id();
+    if ( $plain_text ) {
+			echo "\nCopy paste in browser to get order details for internal accounts: ".$orderDetailsLink."\n";
+		}
+		else {
+			echo '<p><strong>Order details for internal accounts:</strong><br/><a href="'.$orderDetailsLink'">'.$orderDetailsLink."</a>';
+		}
+	}
+}
+
+
 // hook the function into WooCommerce email attachment filter
 add_filter( 'woocommerce_email_attachments', 'custom_order_attachments', 10, 3 );
 
