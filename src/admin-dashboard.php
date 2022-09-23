@@ -142,7 +142,7 @@ function get_order_details($data){
     $output = '';
     foreach ($items as $item) {
       $product = $item->get_product();
-      if(count((array)$product) > 0){
+      if($item->product_id > 0){
         $output .= $product->get_sku() ." ".$item->get_quantity()."\n";
       } else {
         echo $item->name." is no longer available on webisite. Please check order again";die(); 
