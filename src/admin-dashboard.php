@@ -136,7 +136,6 @@ function start_sync($data){
 add_action('wp_ajax_get_order_details', 'get_order_details');
 function get_order_details($data){
   $orderId = isset($data["orderId"]) ? $data["orderId"] : false;
-  echo $orderId;die();
   if($orderId != false){
     $order = wc_get_order( $orderId );
     $items = $order->get_items();
