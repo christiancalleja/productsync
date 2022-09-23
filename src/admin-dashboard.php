@@ -142,7 +142,11 @@ function get_order_details($data){
     $output = '';
     foreach ($items as $item) {
       $product = $item->get_product();
-      $output .= $product->get_sku() ." ".$item->get_quantity()."\n";
+      if(isset($product)){
+        $output .= $product->get_sku() ." ".$item->get_quantity()."\n";
+      } else {
+        echo $item->name." is no longer available on webisite. Please check order again";die(); 
+      } 
     }
     header("Content-type: text/plain");
     header("Content-Disposition: attachment; filename=Order_".$data["orderId"].".txt");
