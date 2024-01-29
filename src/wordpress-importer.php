@@ -12,7 +12,7 @@ class WordpressProductImporter
         $categoriesArray = [];
         $allProductIds = WordpressProductImporter::getAllProductIds();
         foreach ($data as $prd) {
-            //$product_id = wc_get_product_id_by_sku( $prd['_sku'] );
+           
             $processPrefix="\nINSERTED ";
             $simple_product = new WC_Product_Simple();
             $dateUpdate = date("Ymd", strtotime($prd["tm_last_updated"]));
@@ -31,7 +31,7 @@ class WordpressProductImporter
                     continue;
                 };
                 $processPrefix="\nUPDATED ";
-            }
+            } 
             
             if(strtoLower($prd["show"]) == "n"){
                 echo "\nNOT INSERTING ". $prd["_sku"];
@@ -73,6 +73,28 @@ class WordpressProductImporter
         }
         kses_init_filters();
     }
+
+    public static function deleteProducts($data){
+        // If Product is not in the list
+
+        kses_remove_filters(); //insert with html tags
+        add_filter( 'http_request_host_is_external', function() { return true; });
+        $allProductIds = WordpressProductImporter::getAllProductIds();
+        $allIdsToImport = [];
+        foreach ($data as $prd) {
+            $allIdsToImport[] = $prd["_sku"];
+        }
+        foreach($allProductIds as $productId){
+            if (!in_array($productId, $allIdsToImport)){
+                $prodId = wc_get_product_id_by_sku( $productId );
+                $simple_product = wc_get_product( $prodId );
+                $simple_product->delete(true);
+                echo "\nDELETED ". $prd["_sku"];
+            }
+        }
+        kses_init_filters();
+    }
+    
     public static function setCategory( $term, $parent = 0 ){
         $category = term_exists( $term, 'product_cat', $parent );
         $catId = 0;

@@ -125,9 +125,43 @@ function start_sync($data){
   ];
   $mappedProducts = $csvIntegrator->getCSVAsArray($mapping,$count);
   $result = WordpressProductImporter::insertProducts($mappedProducts);
+  if($count == false){
+    // limited array will not be good data set to cleanup products
+    $resultDeletions = WordpressProductImporter::deleteProducts($mappedProducts);
+    echo json_encode($resultDeletions);
+  }
   $time_end = microtime(true);
   $execution_time = ($time_end - $time_start);
   echo json_encode($result);
+  echo "\n----- READY IN ".$execution_time." seconds";
+  die();
+  wp_die();
+}
+
+// Main start sync method which aggregates and inputs data
+add_action('wp_ajax_start_cleanup', 'start_cleanup');
+function start_cleanup(){
+  $time_start = microtime(true); 
+  set_time_limit(0); //avoid timeout
+  $csvPath = get_option('wpprodsync_csv_path');
+  $csvIntegrator = CSVIntegrator::getInstance($csvPath);
+  $mapping = [
+    "_sku",
+    "post_title",
+    "parent_category",
+    "child_category",
+    "price",
+    "tm_last_updated",
+    "vat_rate",
+    "stock",
+    "show",
+    "post_content"
+  ];
+  $mappedProducts = $csvIntegrator->getCSVAsArray($mapping,$count);
+  $resultDeletions = WordpressProductImporter::deleteProducts($mappedProducts);
+  $time_end = microtime(true);
+  $execution_time = ($time_end - $time_start);
+  echo json_encode($resultDeletions);
   echo "\n----- READY IN ".$execution_time." seconds";
   die();
   wp_die();
@@ -174,6 +208,12 @@ add_action( 'rest_api_init', function () {
         'callback' => 'start_sync',
       ) 
     );
+
+    register_rest_route( 'productsync/v1', '/cleanup', array(
+      'methods' => 'GET',
+      'callback' => 'start_cleanup',
+    ) 
+  );
 
     register_rest_route( 'order_details', '/(?P<orderId>\d+)', array(
         'methods' => 'GET',
