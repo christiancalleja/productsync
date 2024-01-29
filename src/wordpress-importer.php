@@ -89,7 +89,7 @@ class WordpressProductImporter
                 $prodId = wc_get_product_id_by_sku( $productId );
                 $simple_product = wc_get_product( $prodId );
                 $simple_product->delete(true);
-                echo "\nDELETED ". $prd["_sku"];
+                echo "\nDELETED ". $productId;
             }
         }
         kses_init_filters();
