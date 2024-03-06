@@ -178,11 +178,14 @@ function get_order_details($data){
     foreach ($items as $item) {
       $product = $item->get_product();
       if($item["product_id"] > 0){
+        $itemMeta = $item->get_meta('_alg_wc_pif_global');
+        $output .= $itemMeta;
         if(!empty($customerNote)){
           $output .= $product->get_sku() ."\t".$item->get_quantity()."\t".$customerNote."\n";
           $customerNote = '';
+        } else {
+          $output .= $product->get_sku() ."\t".$item->get_quantity()."\n";
         }
-        $output .= $product->get_sku() ."\t".$item->get_quantity()."\n";
       } else {
         echo $item["name"]." is no longer available on webisite. Please check order again";die();
       }
