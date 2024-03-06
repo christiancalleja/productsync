@@ -179,7 +179,7 @@ function get_order_details($data){
       $product = $item->get_product();
       if($item["product_id"] > 0){
         $itemMeta = $item->get_meta('_alg_wc_pif_global');
-        $output .= $itemMeta;
+        $output .= json_encode($itemMeta);
         if(!empty($customerNote)){
           $output .= $product->get_sku() ."\t".$item->get_quantity()."\t".$customerNote."\n";
           $customerNote = '';
