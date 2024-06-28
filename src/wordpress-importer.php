@@ -10,6 +10,7 @@ class WordpressProductImporter
         kses_remove_filters(); //insert with html tags
         add_filter( 'http_request_host_is_external', function() { return true; });
         $categoriesArray = [];
+        $brandsArray = [];
         $allProductIds = WordpressProductImporter::getAllProductIds();
         foreach ($data as $prd) {
            
@@ -47,6 +48,7 @@ class WordpressProductImporter
             $simple_product->set_stock_quantity((float)$prd["stock"]);
             $simple_product->update_meta_data('tm_last_updated', $dateUpdate);
 
+
             if(isset($categoriesArray[$prd["parent_category"]][$prd["child_category"]])){
                 $catId = $categoriesArray[$prd["parent_category"]][$prd["child_category"]];
                 $simple_product->set_category_ids([$catId]);
@@ -59,8 +61,19 @@ class WordpressProductImporter
                 echo " | new category ".$prd["child_category"];
             }
 
+            
 
             $new_product_id = $simple_product->save();
+
+            if(isset($brandsArray[$prd["brand"]])){
+                $brandId = $brandsArray[$prd["brand"]];
+                wp_set_post_terms($new_product_id, array($brandId), "pa_brand");
+                echo " | reuse brand ".$prd["brand"];
+            } else {
+                $brandId = setBrand($prd["brand"]);
+                wp_set_post_terms($new_product_id, array($brandId), "pa_brand");
+                echo " | new brand ".$prd["brand"];
+            }
 
             if(isset($prd['image'])){
                 // using FIFU plugin to proxy featured images:
@@ -113,6 +126,22 @@ class WordpressProductImporter
             $catId = $newCategory['term_id'];
         }
         return $catId;
+        
+    }
+
+    public static function setBrand( $term ){
+        $brand = term_exists( $term, 'pa_brand', $parent );
+        $brandId = 0;
+        if($brand){
+            $brandId = $brand['term_id'];
+        } else {
+            $newBrand = wp_insert_term(
+                $term,   
+                'pa_brand', 
+            );
+            $brandId = $newBrand['term_id'];
+        }
+        return $brandId;
         
     }
 

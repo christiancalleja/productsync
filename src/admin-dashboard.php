@@ -121,7 +121,8 @@ function start_sync($data){
     "vat_rate",
     "stock",
     "show",
-    "post_content"
+    "post_content",
+    "brand"
   ];
   $mappedProducts = $csvIntegrator->getCSVAsArray($mapping,$count);
   $result = WordpressProductImporter::insertProducts($mappedProducts);
@@ -155,7 +156,8 @@ function start_cleanup(){
     "vat_rate",
     "stock",
     "show",
-    "post_content"
+    "post_content",
+    "brand"
   ];
   $mappedProducts = $csvIntegrator->getCSVAsArray($mapping,$count);
   $resultDeletions = WordpressProductImporter::deleteProducts($mappedProducts);
