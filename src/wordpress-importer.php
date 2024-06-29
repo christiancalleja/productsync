@@ -140,16 +140,16 @@ class WordpressProductImporter
             $brandId = $newBrand['term_id'];
         }
 
-        wp_set_post_terms($new_product_id, $prd["brand"], "pa_brand");
+        wp_set_post_terms($new_product_id, $term, "pa_brand");
         $att_brand = Array('pa_brand' =>Array(
             'name'=>'pa_brand',
-            'value'=>$prd["brand"],
+            'value'=>$term,
             'is_visible' => '1',
             'is_taxonomy' => '1'
             ));
         
         update_post_meta( $productID, '_product_attributes', $att_brand);
-        echo " | brand ".$prd["brand"];
+        echo " | brand ".$term;
         
     }
 
