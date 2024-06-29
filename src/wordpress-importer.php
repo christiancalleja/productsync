@@ -143,7 +143,7 @@ class WordpressProductImporter
         } else {
             $newBrand = wp_insert_term(
                 $term,   
-                'pa_brand', 
+                'pa_brand'
             );
             $brandId = $newBrand['term_id'];
         }
