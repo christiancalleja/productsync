@@ -76,7 +76,7 @@ class WordpressProductImporter
                 wp_set_post_terms($new_product_id, array($brandId), "pa_brand");
                 echo " | reuse brand ".$prd["brand"];
             } else {
-                $brandId = setBrand($prd["brand"]);
+                $brandId = WordpressProductImporter::setBrand($prd["brand"]);
                 wp_set_post_terms($new_product_id, array($brandId), "pa_brand");
                 echo " | new brand ".$prd["brand"];
             }
