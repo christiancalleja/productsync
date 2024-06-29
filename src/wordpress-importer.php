@@ -73,11 +73,12 @@ class WordpressProductImporter
 
             if(isset($brandsArray[$prd["brand"]])){
                 $brandId = $brandsArray[$prd["brand"]];
-                wp_set_post_terms($new_product_id, [$brandId], "pa_brand");
+                wp_set_post_terms($new_product_id, $prd["brand"], "pa_brand");
                 echo " | reuse brand ".$prd["brand"]." with brandID ".$brandId;
             } else {
                 $brandId = WordpressProductImporter::setBrand($prd["brand"]);
-                wp_set_post_terms($new_product_id, [$brandId], "pa_brand");
+                wp_set_post_terms($new_product_id, $prd["brand"], "pa_brand");
+                $brandsArray[$prd["brand"]] = $brandId;
                 echo " | new brand ".$prd["brand"]." with brandID ".$brandId;
             }
 
