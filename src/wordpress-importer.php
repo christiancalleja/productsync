@@ -148,7 +148,7 @@ class WordpressProductImporter
             'is_taxonomy' => '1'
             ));
         
-        update_post_meta( $productID, '_product_attributes', $att_brand);
+        update_post_meta( $new_product_id, '_product_attributes', $att_brand);
         echo " | brand ".$term;
         
     }
