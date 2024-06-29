@@ -71,16 +71,7 @@ class WordpressProductImporter
 
             $new_product_id = $simple_product->save();
 
-            if(isset($brandsArray[$prd["brand"]])){
-                $brandId = $brandsArray[$prd["brand"]];
-                wp_set_post_terms($new_product_id, $prd["brand"], "pa_brand");
-                echo " | reuse brand ".$prd["brand"]." with brandID ".$brandId;
-            } else {
-                $brandId = WordpressProductImporter::setBrand($prd["brand"]);
-                wp_set_post_terms($new_product_id, $prd["brand"], "pa_brand");
-                $brandsArray[$prd["brand"]] = $brandId;
-                echo " | new brand ".$prd["brand"]." with brandID ".$brandId;
-            }
+            WordpressProductImporter::setBrand($new_product_id, $prd["brand"]);
 
             if(isset($prd['image'])){
                 // using FIFU plugin to proxy featured images:
@@ -136,7 +127,7 @@ class WordpressProductImporter
         
     }
 
-    public static function setBrand( $term ){
+    public static function setBrand( $new_product_id, $term ){
         $brand = term_exists( $term, 'pa_brand', $parent );
         $brandId = 0;
         if($brand){
@@ -148,7 +139,17 @@ class WordpressProductImporter
             );
             $brandId = $newBrand['term_id'];
         }
-        return $brandId;
+
+        wp_set_post_terms($new_product_id, $prd["brand"], "pa_brand");
+        $att_brand = Array('pa_brand' =>Array(
+            'name'=>'pa_brand',
+            'value'=>$prd["brand"],
+            'is_visible' => '1',
+            'is_taxonomy' => '1'
+            ));
+        
+        update_post_meta( $productID, '_product_attributes', $att_brand);
+        echo " | brand ".$prd["brand"];
         
     }
 
