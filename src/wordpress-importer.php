@@ -6,11 +6,6 @@ class WordpressProductImporter
 {
     public static function insertProducts($data) 
     {
-        // SET WITH CAUTION. USE AND REVERT BACK TO FALSE AS SOON AS POSSIBLE
-        $forceUpdate = true;
-        if($forceUpdate){
-            echo "\n ALL UPDATES ARE BEING UPDATED. FORCEUPDATE IN ORDER";
-        }
 
         kses_remove_filters(); //insert with html tags
         add_filter( 'http_request_host_is_external', function() { return true; });
@@ -33,7 +28,7 @@ class WordpressProductImporter
                     continue;
                 }
                 
-                if($dateUpdate == $simple_product->get_meta("tm_last_updated") && !$forceUpdate){
+                if($dateUpdate == $simple_product->get_meta("tm_last_updated")){
                     echo "\n NO UPDATES. SKIPPED PRODUCT ".$prd["_sku"];
                     continue;
                 };
