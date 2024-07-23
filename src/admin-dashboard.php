@@ -108,7 +108,8 @@ add_action('wp_ajax_start_sync', 'start_sync');
 function start_sync($data){
   $time_start = microtime(true); 
   $start = isset($data["start"]) ? $data["start"] : 0;
-  $limit = isset($data->get_param( 'limit' )) ? $data->get_param( 'limit' ) : 0;
+  $limitParam = $data->get_param( 'limit' )
+  $limit = isset($limitParam) ? $limitParam : 0;
   set_time_limit(0); //avoid timeout
   $csvPath = get_option('wpprodsync_csv_path');
   $csvIntegrator = CSVIntegrator::getInstance($csvPath);
