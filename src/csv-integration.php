@@ -46,7 +46,7 @@ class CSVIntegrator {
             $rowTmpObj = array();
 
             for ($j = 0; $j < count($mapping); $j++) {
-                $rowTmpObj[$mapping[$j]] = isset($rowRawArray[$j]) ? $rowRawArray[$j] : null;  
+                $rowTmpObj[$mapping[$j]] = $rowRawArray[$j];
             }
 
             if (!isset($mapping['image'])) {
