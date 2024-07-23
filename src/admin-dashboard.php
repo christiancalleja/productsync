@@ -108,7 +108,7 @@ add_action('wp_ajax_start_sync', 'start_sync');
 function start_sync($data){
   $time_start = microtime(true); 
   $start = isset($data["start"]) ? $data["start"] : 0;
-  $limit = isset($data["limit"]) ? $data["limit"] : 0;
+  $limit = isset($data->get_param( 'limit' )) ? $data->get_param( 'limit' ) : 0;
   set_time_limit(0); //avoid timeout
   $csvPath = get_option('wpprodsync_csv_path');
   $csvIntegrator = CSVIntegrator::getInstance($csvPath);
@@ -207,8 +207,9 @@ function get_order_details($data){
 }
 // Registering of rest api endpoints to run script over http requests.
 add_action( 'rest_api_init', function () {
-    /// final route is [baseurl] wp-json/productsync/v1/syncnow
-    register_rest_route( 'productsync/v1', '/syncnow/(?P<start>\d+)/(?P<limit>\d+)', array(
+    /// final route is [baseurl] wp-json/productsync/v1/syncnow/
+    // or [baseurl] wp-json/productsync/v1/syncnow/0?limit=100   (specifying starting index and amount to limit)
+    register_rest_route( 'productsync/v1', '/syncnow/(?P<start>\d+)', array(
         'methods' => 'GET',
         'callback' => 'start_sync',
       ) 
