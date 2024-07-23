@@ -39,46 +39,42 @@ class CSVIntegrator {
         $delimiter = ',';
         $lineBreak = "\n";
         $rows = str_getcsv($csvRaw, $lineBreak); // Parses the rows. Treats the rows as a CSV with \n as a delimiter
+        if($start > 0 ){
+            for ($i = $start; $i < count($rows); $i++) {
+                $row = $rows[$i];
+                $rowRawArray = str_getcsv($row, $delimiter);
+                $rowTmpObj = array();
 
-        for ($i = $start; $i < count($rows); $i++) {
-            $row = $rows[$i];
-            $rowRawArray = str_getcsv($row, $delimiter);
-            $rowTmpObj = array();
+                for ($j = 0; $j < count($mapping); $j++) {
+                    $rowTmpObj[$mapping[$j]] = $rowRawArray[$j];
+                }
 
-            for ($j = 0; $j < count($mapping); $j++) {
-                $rowTmpObj[$mapping[$j]] = $rowRawArray[$j];
-            }
+                if (!isset($mapping['image'])) {
+                    $rowTmpObj['image'] = $rowTmpObj['_sku'] . ".jpg";
+                }
 
-            if (!isset($mapping['image'])) {
-                $rowTmpObj['image'] = $rowTmpObj['_sku'] . ".jpg";
-            }
+                $csvArray[] = $rowTmpObj;
 
-            $csvArray[] = $rowTmpObj;
-
-            if ($limit !== 0) {
-                $limitPosition = $start + $limit;
-                if ($i >= $limitPosition) {
-                    break;
+                if ($limit !== 0) {
+                    $limitPosition = $start + $limit;
+                    if ($i >= $limitPosition) {
+                        break;
+                    }
                 }
             }
+        } else {
+            foreach ($rows as $row) {
+                $rowRawArray = str_getcsv($row, $delimiter);
+                $rowTmpObj = array();
+                for ($i=0; $i < count($mapping); $i++) { 
+                    $rowTmpObj[$mapping[$i]] = $rowRawArray[$i];
+                }
+                if(!isset($mapping['image'])){
+                    $rowTmpObj['image'] = $rowTmpObj['_sku'].".jpg";
+                }
+                $csvArray[] = $rowTmpObj;
+            }
         }
-        // foreach ($rows as $row) {
-        //     $rowRawArray = str_getcsv($row, $delimiter);
-        //     $rowTmpObj = array();
-        //     for ($i=0; $i < count($mapping); $i++) { 
-        //         $rowTmpObj[$mapping[$i]] = $rowRawArray[$i];
-        //     }
-        //     if(!isset($mapping['image'])){
-        //         $rowTmpObj['image'] = $rowTmpObj['_sku'].".jpg";
-        //     }
-        //     $csvArray[] = $rowTmpObj;
-        //     if($count != false){
-        //         $counter++;
-        //         if($counter == $count){
-        //             break;
-        //         }
-        //     }
-        // }
         return $csvArray;
     }
 

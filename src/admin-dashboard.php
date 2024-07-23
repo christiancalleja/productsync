@@ -207,7 +207,7 @@ function get_order_details($data){
 // Registering of rest api endpoints to run script over http requests.
 add_action( 'rest_api_init', function () {
     /// final route is [baseurl] wp-json/productsync/v1/syncnow/
-    // or [baseurl] wp-json/productsync/v1/syncnow/0?limit=100   (specifying starting index and amount to limit)
+    // or [baseurl] wp-json/productsync/v1/syncnow/100 (start position, with a fixed limit)
     register_rest_route( 'productsync/v1', '/syncnow/(?P<start>\d+)', array(
         'methods' => 'GET',
         'callback' => 'start_sync',
