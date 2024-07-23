@@ -107,7 +107,8 @@ function save_path(){
 add_action('wp_ajax_start_sync', 'start_sync');
 function start_sync($data){
   $time_start = microtime(true); 
-  $count = isset($data["count"]) ? $data["count"] : false;
+  $start = isset($data["start"]) ? $data["start"] : 0;
+  $limit = isset($data["limit"]) ? $data["limit"] : 0;
   set_time_limit(0); //avoid timeout
   $csvPath = get_option('wpprodsync_csv_path');
   $csvIntegrator = CSVIntegrator::getInstance($csvPath);
@@ -124,7 +125,7 @@ function start_sync($data){
     "post_content",
     "brand"
   ];
-  $mappedProducts = $csvIntegrator->getCSVAsArray($mapping,$count);
+  $mappedProducts = $csvIntegrator->getCSVAsArray($mapping,$start,$limit);
   $result = WordpressProductImporter::insertProducts($mappedProducts);
   if($count == false){
     // limited array will not be good data set to cleanup products
@@ -207,7 +208,7 @@ function get_order_details($data){
 // Registering of rest api endpoints to run script over http requests.
 add_action( 'rest_api_init', function () {
     /// final route is [baseurl] wp-json/productsync/v1/syncnow
-    register_rest_route( 'productsync/v1', '/syncnow/(?P<count>\d+)', array(
+    register_rest_route( 'productsync/v1', '/syncnow/(?P<start>\d+)/(?P<limit>\d+)', array(
         'methods' => 'GET',
         'callback' => 'start_sync',
       ) 

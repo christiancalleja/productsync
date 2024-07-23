@@ -33,30 +33,53 @@ class CSVIntegrator {
     /**
      * Get CSV file, parse it to array and return
      */
-    public function getCSVAsArray($mapping, $count = false) {
+    public function getCSVAsArray($mapping, $start = 0, $limit = 0) {
         $csvRaw = $this->makeGetCurlCall($this->csvURL);
         $csvArray = [];
         $delimiter = ',';
         $lineBreak = "\n";
         $rows = str_getcsv($csvRaw, $lineBreak); // Parses the rows. Treats the rows as a CSV with \n as a delimiter
-        $counter = 0;
-        foreach ($rows as $row) {
+
+        for ($i = $start; $i < count($rows); $i++) {
+            $row = $rows[$i];
             $rowRawArray = str_getcsv($row, $delimiter);
             $rowTmpObj = array();
-            for ($i=0; $i < count($mapping); $i++) { 
-                $rowTmpObj[$mapping[$i]] = $rowRawArray[$i];
+
+            for ($j = 0; $j < count($mapping); $j++) {
+                $rowTmpObj[$mapping[$j]] = $isset($rowRawArray[$j]) ? $rowRawArray[$j] : null;  
             }
-            if(!isset($mapping['image'])){
-                $rowTmpObj['image'] = $rowTmpObj['_sku'].".jpg";
+
+            if (!isset($mapping['image'])) {
+                $rowTmpObj['image'] = $rowTmpObj['_sku'] . ".jpg";
             }
+
             $csvArray[] = $rowTmpObj;
-            if($count != false){
-                $counter++;
-                if($counter == $count){
-                    break;
-                }
+
+            if ($limit !== 0) {
+                $limitPosition = $start + $limit;
+                if ($i >= $limitPosition) {
+                break;
+              }
             }
+          }
         }
+        // foreach ($rows as $row) {
+        //     $rowRawArray = str_getcsv($row, $delimiter);
+        //     $rowTmpObj = array();
+        //     for ($i=0; $i < count($mapping); $i++) { 
+        //         $rowTmpObj[$mapping[$i]] = $rowRawArray[$i];
+        //     }
+        //     if(!isset($mapping['image'])){
+        //         $rowTmpObj['image'] = $rowTmpObj['_sku'].".jpg";
+        //     }
+        //     $csvArray[] = $rowTmpObj;
+        //     if($count != false){
+        //         $counter++;
+        //         if($counter == $count){
+        //             break;
+        //         }
+        //     }
+        // }
         return $csvArray;
     }
 
