@@ -33,7 +33,7 @@ class CSVIntegrator {
     /**
      * Get CSV file, parse it to array and return
      */
-    public function getCSVAsArray($mapping, $start = 0, $limit = 0) {
+    public function getCSVAsArray($mapping, $start = 0, $limit = 100) {
         $csvRaw = $this->makeGetCurlCall($this->csvURL);
         $csvArray = [];
         $delimiter = ',';

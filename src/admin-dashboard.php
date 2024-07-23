@@ -108,7 +108,6 @@ add_action('wp_ajax_start_sync', 'start_sync');
 function start_sync($data){
   $time_start = microtime(true); 
   $start = isset($data["start"]) ? $data["start"] : 0;
-  $limit = $data->get_param( 'limit' );
   set_time_limit(0); //avoid timeout
   $csvPath = get_option('wpprodsync_csv_path');
   $csvIntegrator = CSVIntegrator::getInstance($csvPath);
@@ -125,7 +124,7 @@ function start_sync($data){
     "post_content",
     "brand"
   ];
-  $mappedProducts = $csvIntegrator->getCSVAsArray($mapping,$start,$limit);
+  $mappedProducts = $csvIntegrator->getCSVAsArray($mapping,$start);
   $result = WordpressProductImporter::insertProducts($mappedProducts);
   if($count == false){
     // limited array will not be good data set to cleanup products
