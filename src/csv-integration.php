@@ -58,10 +58,9 @@ class CSVIntegrator {
             if ($limit !== 0) {
                 $limitPosition = $start + $limit;
                 if ($i >= $limitPosition) {
-                break;
-              }
+                    break;
+                }
             }
-          }
         }
         // foreach ($rows as $row) {
         //     $rowRawArray = str_getcsv($row, $delimiter);
