@@ -66,7 +66,10 @@ class WordpressProductImporter
 
             $new_product_id = $simple_product->save();
 
-            WordpressProductImporter::setBrand($new_product_id, $prd["brand"]);
+            if(isset($prd["brand"])){
+                WordpressProductImporter::setBrand($new_product_id, $prd["brand"]);
+            }
+            
 
             if(isset($prd['image'])){
                 // using FIFU plugin to proxy featured images:
