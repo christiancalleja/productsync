@@ -34,7 +34,7 @@ class CSVIntegrator {
      * Get CSV file, parse it to array and return
      */
     public function getCSVAsArray($mapping, $start = 0) {
-        $limit = 100;
+        $limit = 1000;
         $csvRaw = $this->makeGetCurlCall($this->csvURL);
         $csvArray = [];
         $delimiter = ',';
