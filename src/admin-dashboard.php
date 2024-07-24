@@ -126,7 +126,7 @@ function start_sync($data){
   ];
   $mappedProducts = $csvIntegrator->getCSVAsArray($mapping,$start);
   $result = WordpressProductImporter::insertProducts($mappedProducts);
-  if($count == false){
+  if($start == false){
     // limited array will not be good data set to cleanup products
     $resultDeletions = WordpressProductImporter::deleteProducts($mappedProducts);
     echo json_encode($resultDeletions);
